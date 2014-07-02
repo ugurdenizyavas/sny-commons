@@ -1,0 +1,52 @@
+//======================================================================
+// REPOSITORIES
+//======================================================================
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+//======================================================================
+// PLUGINS
+//======================================================================
+
+apply plugin: "java"
+apply plugin: "idea"
+
+//======================================================================
+// CONFIGURATIONS
+//======================================================================
+
+idea {
+    project {
+        jdkName "1.7"
+        languageLevel "1.7"
+    }
+    module {
+        inheritOutputDirs = false
+        outputDir = compileJava.destinationDir
+        testOutputDir = compileTestJava.destinationDir
+
+    }
+}
+
+//======================================================================
+// DEPENDENCIES
+//======================================================================
+
+dependencies {
+    compile "org.slf4j:slf4j-api:1.7.5"
+    compile "org.slf4j:slf4j-log4j12:1.7.5"
+    compile "commons-lang:commons-lang:2.4"
+    compile "joda-time:joda-time:2.3"
+    testCompile "junit:junit:4.11"
+}
+
