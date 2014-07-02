@@ -1,16 +1,29 @@
 //======================================================================
+// PROJECT
+//======================================================================
+
+version = '1.0-SNAPSHOT'
+group = 'com.sony.ebs.octopus3'
+
+//======================================================================
 // REPOSITORIES
 //======================================================================
 
 buildscript {
     repositories {
         mavenLocal()
+        maven { url "https://mvn.sony-europe.com/content/groups/global" }
+        maven { url "http://repo.spring.io/libs-release-remote" }
         mavenCentral()
+    }
+    dependencies {
+        classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7"
     }
 }
 
 repositories {
     mavenLocal()
+    maven { url "https://mvn.sony-europe.com/content/groups/global" }
     mavenCentral()
 }
 
@@ -20,6 +33,7 @@ repositories {
 
 apply plugin: "java"
 apply plugin: "idea"
+apply plugin: "nexus"
 
 //======================================================================
 // CONFIGURATIONS
@@ -50,3 +64,15 @@ dependencies {
     testCompile "junit:junit:4.11"
 }
 
+//======================================================================
+// DEPLOY ARTIFACTS
+//======================================================================
+
+nexus {
+    attachSources = true
+    attachTests = false
+    attachJavadoc = false
+    sign = false
+    repositoryUrl = "https://mvn.sony-europe.com/content/repositories/releases"
+    snapshotRepositoryUrl = "https://mvn.sony-europe.com/content/repositories/snapshots"
+}
