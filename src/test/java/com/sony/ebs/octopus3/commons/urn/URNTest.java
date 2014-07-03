@@ -2,15 +2,13 @@ package com.sony.ebs.octopus3.commons.urn;
 
 import org.junit.Test;
 
-import java.nio.file.FileStore;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -52,14 +50,47 @@ public class URNTest {
         assertEquals("Value is wrong", Arrays.asList("uppercase"), urn.getValues());
 
         URN urn2 = new URNImpl("urn:vm:uppercase");
-        assertTrue("URN comparison seem case sensitive urn1 ["+urn+"] and urn2 ["+urn2+"]", urn2.equals(urn));
+        assertTrue("URN comparison seem case sensitive urn1 [" + urn + "] and urn2 [" + urn2 + "]", urn2.equals(urn));
     }
 
     @Test
-    public void specialCharacters_slash() throws URNCreationException {
-        URN urn = new URNImpl("urn:global_sku:global:en_GB:DSCT800/T.CEE");
-        assertEquals("Generated URN string is wrong", "urn:global_sku:global:en_gb:dsct800%2ft.cee", urn.toString());
-        assertEquals("Generated path string is wrong", "/global_sku/global/en_gb/dsct800%2ft.cee", urn.toPath());
+    public void createFileURN() throws URNCreationException {
+        URN urn = new URNImpl(Paths.get("/a/b"), Paths.get("/a/b/c/d/e"));
+        assertEquals("Type is wrong", "c", urn.getType());
+        assertEquals("Value is wrong", Arrays.asList("d", "e"), urn.getValues());
+        assertEquals("Generated URN string is wrong", "urn:c:d:e", urn.toString());
+        assertEquals("Generated URN string is wrong", new URNImpl("urn:c:d:e"), urn);
+        assertEquals("Generated path string is wrong", "/c/d/e", urn.toPath());
+    }
+
+    @Test
+    public void validateURNs() throws URNCreationException {
+        URNImpl urn = new URNImpl("urn:sku:a");
+
+        // positives
+        assertTrue(urn.validateURN("urn:sku:a"));
+        assertTrue(urn.validateURN("urn:global_sku:a"));
+        assertTrue(urn.validateURN("urn:global-sku:a"));
+        assertTrue(urn.validateURN("urn:sku:a.a"));
+        assertTrue(urn.validateURN("urn:sku:a-a"));
+        assertTrue(urn.validateURN("urn:sku:a%a"));
+        assertTrue(urn.validateURN("urn:sku:a+a"));
+        assertTrue(urn.validateURN("URN:SKU:A"));
+        assertTrue(urn.validateURN("urn:test+sku:a"));
+        assertTrue(urn.validateURN("urn:test.sku:a"));
+
+        // negatives
+        assertFalse(urn.validateURN("urn"));
+        assertFalse(urn.validateURN("urn:sku"));
+        assertFalse(urn.validateURN("urn:sku:"));
+        assertFalse(urn.validateURN(":sku:a"));
+        assertFalse(urn.validateURN("xyz:sku:a"));
+        assertFalse(urn.validateURN("urn:sku:a a"));
+        assertFalse(urn.validateURN("urn:sku:a/a"));
+        assertFalse(urn.validateURN("urn:sku:a\\a"));
+        assertFalse(urn.validateURN("urn:sku:a:"));
+        assertFalse(urn.validateURN("urn:sku:a:::"));
+        assertFalse(urn.validateURN("urn:sku:a:<script>"));
     }
 
     // ============================

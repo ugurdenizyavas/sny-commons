@@ -1,15 +1,14 @@
 package com.sony.ebs.octopus3.commons.urn;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Default implementation of URN. All data in urn string is converted into lowercase.
@@ -18,7 +17,9 @@ import java.util.List;
  */
 public class URNImpl implements URN {
 
-    private static final Logger logger = LoggerFactory.getLogger(URNImpl.class);
+    public static final String REGEXP_SECTION = "([a-zA-Z0-9-_+\\.%]+)";
+    public static final String REGEXP_URN = URN_PREFIX + URN_DELIMITER + REGEXP_SECTION + "(" + URN_DELIMITER + REGEXP_SECTION + ")+";
+
     private String type;
     private List<String> values;
 
@@ -30,24 +31,7 @@ public class URNImpl implements URN {
      * @throws URNCreationException thrown in case of conversion errors
      */
     public URNImpl(String urnStr) throws URNCreationException {
-        List<String> tokens;
-        String prefix;
-
-        try {
-            tokens = Arrays.asList(StringUtils.splitByWholeSeparatorPreserveAllTokens(urnStr, URN_DELIMITER));
-            prefix = tokens.get(0).toLowerCase();
-            this.type = sanitize(tokens.get(1).intern());
-            this.values = sanitize(tokens.subList(2, tokens.size()));
-        } catch (Exception e) {
-            throw new URNCreationException("Error occurred while creating URN [" + urnStr + "]", e);
-        }
-
-        if (!URN_PREFIX.equals(prefix)) {
-            throw new URNCreationException("Prefix [" + prefix + "] is invalid for the urn string [" + urnStr + "]");
-        }
-        if (StringUtils.isEmpty(type)) {
-            throw new URNCreationException("Type [" + type + "] is invalid for the urn string [" + urnStr + "]");
-        }
+        process(urnStr);
     }
 
     /**
@@ -56,11 +40,48 @@ public class URNImpl implements URN {
      * @throws URNCreationException
      */
     public URNImpl(String type, List<String> values) throws URNCreationException {
-        if (null == type || null == values || values.isEmpty()) {
-            throw new URNCreationException("Cannot create URN due to null type or value");
+        if (type == null || values == null || values.isEmpty()){
+            throw new URNCreationException("Cannot validate the URN because type ["+type+"] or values ["+values+"] is null");
         }
-        this.type = sanitize(type).intern();
-        this.values = sanitize(values);
+        process(URN_PREFIX + URN_DELIMITER + type + URN_DELIMITER + StringUtils.join(values, URN_DELIMITER));
+    }
+
+    /**
+     * This constructor is used for creating URNs for given paths in filesystem. We assume that the base path is
+     * a parent of the given file's path.
+     *
+     * @param base is the path of base folder, like "/home"
+     * @param path is the path of the file, like "/home/path/to/file"
+     * @throws URNCreationException
+     */
+    public URNImpl(Path base, Path path) throws URNCreationException {
+        if (base == null || path == null){
+            throw new URNCreationException("Cannot validate the URN because base path ["+base+"] or file path ["+path+"] is null");
+        }
+        process(URN_PREFIX + URN_DELIMITER +
+                path.subpath(base.getNameCount(), path.getNameCount()).toString()
+                        .replace(File.separator, URN_DELIMITER));
+    }
+
+    /**
+     * Processes URN string. It is used by constructors.
+     *
+     * @param urnStr String representation of URN
+     * @throws URNCreationException occurs in case of issues
+     */
+    protected void process(String urnStr) throws URNCreationException {
+        List<String> tokens;
+
+        if (!validateURN(urnStr)) {
+            throw new URNCreationException("URN string [" + urnStr + "] is invalid");
+        }
+        try {
+            tokens = Arrays.asList(StringUtils.splitByWholeSeparatorPreserveAllTokens(urnStr, URN_DELIMITER));
+            this.type = lowercase(tokens.get(1).intern());
+            this.values = lowercase(tokens.subList(2, tokens.size()));
+        } catch (Exception e) {
+            throw new URNCreationException("Error occurred while creating URN [" + urnStr + "]", e);
+        }
     }
 
     @Override
@@ -103,6 +124,29 @@ public class URNImpl implements URN {
         return result;
     }
 
+
+    /**
+     * Validates the sections of incoming URN string
+     *
+     * @param data string representation of the type or value
+     * @return true if it is a valid type or value
+     */
+    protected boolean validateSection(String data) {
+        return Pattern.compile(REGEXP_SECTION, Pattern.CASE_INSENSITIVE).matcher(data).matches();
+    }
+
+    /**
+     * Validates the incoming URN string
+     *
+     * @param data string representation of the URN/type/value
+     * @return true if it is a valid URN, type or value
+     */
+    protected boolean validateURN(String data) throws URNCreationException {
+        if (data == null) throw new URNCreationException("Cannot validate the URN because it is null");
+        return Pattern.compile(REGEXP_URN, Pattern.CASE_INSENSITIVE).matcher(data).matches();
+    }
+
+
     /**
      * Sanitizes and converts the items in a list to lowercase
      *
@@ -110,16 +154,10 @@ public class URNImpl implements URN {
      * @return sanitized, lowercase values as list
      * @throws URNCreationException due to missing or wrong data
      */
-    private List<String> sanitize(List<String> input) throws URNCreationException {
-        if (input == null || input.isEmpty()) {
-            throw new URNCreationException("Values [" + input + "] is null or empty ");
-        }
+    protected List<String> lowercase(List<String> input) throws URNCreationException {
         List<String> output = new ArrayList<String>();
         for (String value : input) {
-            if (StringUtils.isEmpty(value)) {
-                throw new URNCreationException("Values [" + values + "] contain an empty token");
-            }
-            output.add(sanitize(value));
+            output.add(lowercase(value));
         }
         return output;
     }
@@ -131,15 +169,10 @@ public class URNImpl implements URN {
      * @return sanitized and lowercase data
      * @throws URNCreationException occurs if the given data is empty
      */
-    private String sanitize(String input) throws URNCreationException {
-        if (StringUtils.isEmpty(input)) {
-            throw new URNCreationException("Input string [" + input + "] cannot be sanitized because it is empty");
+    protected String lowercase(String input) throws URNCreationException {
+        if (!validateSection(input)) {
+            throw new URNCreationException("URN section string [" + input + "] is invalid");
         }
-        try {
-            return URLEncoder.encode(input, "UTF-8").toLowerCase();
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Input string [" + input + "] cannot be sanitized", e);
-            return input;
-        }
+        return input.toLowerCase();
     }
 }
