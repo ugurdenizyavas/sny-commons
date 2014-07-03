@@ -2,6 +2,12 @@ package com.sony.ebs.octopus3.commons.urn;
 
 import org.junit.Test;
 
+import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -24,6 +30,15 @@ public class URNTest {
     @Test
     public void createFromLongerURNString() throws URNCreationException {
         URN urn = new URNImpl("urn:vm:123456789:en_GB");
+        assertEquals("Type is wrong", "vm", urn.getType());
+        assertEquals("Value is wrong", Arrays.asList("123456789","en_gb"), urn.getValues());
+        assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
+        assertEquals("Generated path string is wrong", "/vm/123456789/en_gb", urn.toPath());
+    }
+
+    @Test
+    public void createURNByValues() throws URNCreationException {
+        URN urn = new URNImpl("vm", Arrays.asList("123456789", "en_GB"));
         assertEquals("Type is wrong", "vm", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("123456789","en_gb"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
@@ -92,8 +107,23 @@ public class URNTest {
     }
 
     @Test(expected = URNCreationException.class)
-    public void missingAllInURN() throws URNCreationException {
-        new URNImpl("::");
+    public void missingTypeAsParam() throws URNCreationException {
+        new URNImpl(null, Arrays.asList("a","b","c"));
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void missingValuesAsParam() throws URNCreationException {
+        new URNImpl("sku", null);
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void missingValueInValuesParam() throws URNCreationException {
+        new URNImpl("sku", Arrays.asList("a", "", "c"));
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void emptyValuesParam() throws URNCreationException {
+        new URNImpl("sku", new ArrayList<String>());
     }
 
 }

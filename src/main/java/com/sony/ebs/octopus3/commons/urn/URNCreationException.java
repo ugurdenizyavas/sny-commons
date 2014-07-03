@@ -1,6 +1,8 @@
 package com.sony.ebs.octopus3.commons.urn;
 
 /**
+ * The exception is thrown in case of any errors during creation process.
+ *
  * @author Lemi Orhan Ergin
  */
 public class URNCreationException extends Exception {

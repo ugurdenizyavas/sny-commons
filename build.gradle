@@ -71,7 +71,7 @@ dependencies {
 nexus {
     attachSources = true
     attachTests = false
-    attachJavadoc = false
+    attachJavadoc = true
     sign = false
     repositoryUrl = "https://mvn.sony-europe.com/content/repositories/releases"
     snapshotRepositoryUrl = "https://mvn.sony-europe.com/content/repositories/snapshots"
