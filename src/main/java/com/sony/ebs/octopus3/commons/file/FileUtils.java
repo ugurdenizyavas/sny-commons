@@ -48,14 +48,14 @@ public class FileUtils {
         }
     }
 
-    public static boolean writeFile(Path path, String content, boolean override, boolean createMissingFolders) {
+    public static boolean writeFile(Path path, byte[] content, boolean override, boolean createMissingFolders) {
         try {
             if (!override && Files.exists(path)) {
                 logger.debug("File already exists in path [" + path + "] and override is not allowed");
                 return false;
             }
             if (createMissingFolders) Files.createDirectories(path.getParent());
-            Files.write(path, content.getBytes());
+            Files.write(path, content);
             logger.debug("File is written in path [" + path + "]");
         } catch (IOException e) {
             logger.debug("Content cannot be written to path [" + path + "]", e);
