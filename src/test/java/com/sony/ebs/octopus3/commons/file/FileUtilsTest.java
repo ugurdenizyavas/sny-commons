@@ -18,23 +18,23 @@ public class FileUtilsTest {
     public void writeFile() throws Exception {
         Path basePath = Paths.get(System.getProperty("java.io.tmpdir") + "/fileTest/a/b/c");
         Path filePath = Paths.get(basePath.toString() + "/file.txt");
-        assertTrue(FileUtils.writeFile(filePath, "test", true, true));
+        assertTrue(FileUtils.writeFile(filePath, "test".getBytes(), true, true));
     }
 
     @Test
     public void writeFile_unableToWrite_alreadyExists() {
         Path basePath = Paths.get(System.getProperty("java.io.tmpdir") + "/fileTest/a/b/c");
         Path filePath = Paths.get(basePath.toString() + "/file.txt");
-        assertTrue(FileUtils.writeFile(filePath, "test", true, true));
+        assertTrue(FileUtils.writeFile(filePath, "test".getBytes(), true, true));
 
-        assertFalse(FileUtils.writeFile(filePath, "test", false, true));
+        assertFalse(FileUtils.writeFile(filePath, "test".getBytes(), false, true));
     }
 
     @Test
     public void writeFile_unableToWrite_missingFolders() throws Exception {
         Path basePath = Paths.get(System.getProperty("java.io.tmpdir") + "/fileTest/a/b/c");
         Path filePath = Paths.get(basePath.toString() + "/file.txt");
-        assertFalse(FileUtils.writeFile(filePath, "test", true, false));
+        assertFalse(FileUtils.writeFile(filePath, "test".getBytes(), true, false));
     }
 
     @After
