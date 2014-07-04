@@ -2,14 +2,11 @@ package com.sony.ebs.octopus3.commons.urn;
 
 import org.junit.Test;
 
-import java.nio.file.*;
-import java.nio.file.spi.FileSystemProvider;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Lemi Orhan Ergin
@@ -59,8 +56,10 @@ public class URNTest {
         assertEquals("Type is wrong", "c", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("d", "e"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:c:d:e", urn.toString());
-        assertEquals("Generated URN string is wrong", new URNImpl("urn:c:d:e"), urn);
         assertEquals("Generated path string is wrong", "/c/d/e", urn.toPath());
+
+        assertEquals("Equals logic of URN is wrong", new URNImpl("urn:c:d:e"), urn);
+        assertEquals("Hash code of URN string is wrong", new URNImpl("urn:c:d:e").hashCode(), urn.hashCode());
     }
 
     @Test
@@ -98,63 +97,68 @@ public class URNTest {
     // ============================
 
     @Test(expected = URNCreationException.class)
-    public void cannotCreateFromSingleURNString() throws URNCreationException {
+    public void urnString_missingValues() throws URNCreationException {
         new URNImpl("urn:vm");
     }
 
     @Test(expected = URNCreationException.class)
-    public void cannotCreateFromSingleURNStringForInvalidPrefix() throws URNCreationException {
+    public void urnString_invalidPrefix() throws URNCreationException {
         new URNImpl("urx:vm:123456789");
     }
 
     @Test(expected = URNCreationException.class)
-    public void cannotCreateFromNullURNString() throws URNCreationException {
+    public void urnString_nullString() throws URNCreationException {
         new URNImpl(null);
     }
 
     @Test(expected = URNCreationException.class)
-    public void cannotCreateFromEmptyURNString() throws URNCreationException {
+    public void urnString_emptyString() throws URNCreationException {
         new URNImpl("");
     }
 
     @Test(expected = URNCreationException.class)
-    public void cannotCreateFromValues() throws URNCreationException {
-        new URNImpl("vm", null);
-    }
-
-    @Test(expected = URNCreationException.class)
-    public void missingPrefixInURN() throws URNCreationException {
-        new URNImpl(":VM:UPPERCASE");
-    }
-
-    @Test(expected = URNCreationException.class)
-    public void missingTypeInURN() throws URNCreationException {
+    public void urnString_missingType() throws URNCreationException {
         new URNImpl("URN::UPPERCASE");
     }
 
     @Test(expected = URNCreationException.class)
-    public void missingValueInURN() throws URNCreationException {
+    public void urnString_missingValuesInInvalidString() throws URNCreationException {
         new URNImpl("URN:VM:");
     }
 
     @Test(expected = URNCreationException.class)
-    public void missingTypeAsParam() throws URNCreationException {
+    public void urnString_missingPrefix() throws URNCreationException {
+        new URNImpl(":VM:UPPERCASE");
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void urnTypeAndValues_missingValues() throws URNCreationException {
+        new URNImpl("vm", null);
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void urnTypeAndValues_missingType() throws URNCreationException {
         new URNImpl(null, Arrays.asList("a","b","c"));
     }
 
     @Test(expected = URNCreationException.class)
-    public void missingValuesAsParam() throws URNCreationException {
-        new URNImpl("sku", null);
-    }
-
-    @Test(expected = URNCreationException.class)
-    public void missingValueInValuesParam() throws URNCreationException {
+    public void urnTypeAndValues_emptyValueInValues() throws URNCreationException {
         new URNImpl("sku", Arrays.asList("a", "", "c"));
     }
 
     @Test(expected = URNCreationException.class)
-    public void emptyValuesParam() throws URNCreationException {
+    public void urnTypeAndValues_fullyEmptyValues() throws URNCreationException {
         new URNImpl("sku", new ArrayList<String>());
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void urnFromPaths_missingBasePath() throws URNCreationException {
+        new URNImpl(null, Paths.get("/"));
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void urnFromPaths_missingFilePath() throws URNCreationException {
+        new URNImpl(Paths.get("/"), null);
     }
 
 }

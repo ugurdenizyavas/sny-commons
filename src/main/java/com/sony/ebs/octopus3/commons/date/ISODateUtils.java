@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.commons.date;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -14,6 +15,10 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public class ISODateUtils {
 
+    private ISODateUtils() throws InstantiationException {
+        throw new InstantiationException("Utility classes should not be instantiated");
+    }
+
     /**
      * Converts the given date string into ISO-8601 format. Normally a runtime exception is thrown in case of failures
      * during the conversion. We catch and throw a higher level checked exception to force users handle these cases.
@@ -23,6 +28,8 @@ public class ISODateUtils {
      * @throws DateConversionException is thrown in case of a failure in the conversion process
      */
     public static DateTime toISODate(String dateStr) throws DateConversionException {
+        if (StringUtils.isEmpty(dateStr))
+            throw new DateConversionException("Date string [" + dateStr + "] cannot be converted to date because it is null or empty");
         try {
             DateTimeFormatter parser = ISODateTimeFormat.dateTime();
             return parser.parseDateTime(dateStr);
@@ -37,7 +44,9 @@ public class ISODateUtils {
      * @param dateTime as Joda-Time's DateTime
      * @return String in "yyyy-MM-dd'T'HH:mm:ss.SSSZ" format
      */
-    public static String toISODateString(DateTime dateTime) {
+    public static String toISODateString(DateTime dateTime) throws DateConversionException {
+        if (dateTime == null)
+            throw new DateConversionException("DateTime cannot be converted to string because it is null");
         return dateTime.toString(ISODateTimeFormat.dateTime());
     }
 
