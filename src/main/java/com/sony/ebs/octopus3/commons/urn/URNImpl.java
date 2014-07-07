@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.commons.urn;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -96,7 +97,7 @@ public class URNImpl implements URN {
             throw new URNCreationException("URN string [" + urnStr + "] is invalid");
         }
         tokens = Arrays.asList(StringUtils.splitByWholeSeparatorPreserveAllTokens(urnStr, URN_DELIMITER));
-        this.type = lowercase(tokens.get(1).intern());
+        this.type = tokens.get(1).toLowerCase().intern();
         this.values = lowercase(tokens.subList(2, tokens.size()));
     }
 
@@ -133,7 +134,6 @@ public class URNImpl implements URN {
         }
         URNImpl rhs = (URNImpl) obj;
         return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
                 .append(getType(), rhs.getType())
                 .append(getValues(), rhs.getValues())
                 .isEquals();
@@ -141,7 +141,7 @@ public class URNImpl implements URN {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
+        return new HashCodeBuilder()
                 .append(getType())
                 .append(getValues())
                 .toHashCode();
@@ -168,19 +168,8 @@ public class URNImpl implements URN {
     protected List<String> lowercase(List<String> input) throws URNCreationException {
         List<String> output = new ArrayList<String>();
         for (String value : input) {
-            output.add(lowercase(value));
+            output.add(value.toLowerCase());
         }
         return output;
-    }
-
-    /**
-     * Sanitizes the given data
-     *
-     * @param input as String
-     * @return sanitized and lowercase data
-     * @throws URNCreationException occurs if the given data is empty
-     */
-    protected String lowercase(String input) throws URNCreationException {
-        return input.toLowerCase();
     }
 }

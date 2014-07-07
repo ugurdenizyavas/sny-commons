@@ -8,6 +8,7 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,13 +23,13 @@ public class FileUtils {
         throw new InstantiationException("Utility classes should not be instantiated");
     }
 
-    public static List<Path> deleteDirectory(Path dir) {
+    public static List<Path> delete(Path dir) {
         try {
             TrackingFileVisitor<Path> visitor = new TrackingFileVisitor<Path>() {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
+                    Files.deleteIfExists(file);
                     getFilesTracked().add(file);
                     return FileVisitResult.CONTINUE;
                 }
@@ -36,7 +37,7 @@ public class FileUtils {
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                     if (exc == null) {
-                        Files.delete(dir);
+                        Files.deleteIfExists(dir);
                         return FileVisitResult.CONTINUE;
                     } else {
                         throw exc;
@@ -46,9 +47,9 @@ public class FileUtils {
 
             Files.walkFileTree(dir, visitor);
             return visitor.getFilesTracked();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.debug("Unable to delete directory [" + dir + "] due to errors", e);
-            return null;
+            return new ArrayList<Path>();
         }
     }
 
