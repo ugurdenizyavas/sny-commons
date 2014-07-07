@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -26,7 +27,7 @@ public class URNTest {
     public void createFromLongerURNString() throws URNCreationException {
         URN urn = new URNImpl("urn:vm:123456789:en_GB");
         assertEquals("Type is wrong", "vm", urn.getType());
-        assertEquals("Value is wrong", Arrays.asList("123456789","en_gb"), urn.getValues());
+        assertEquals("Value is wrong", Arrays.asList("123456789", "en_gb"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
         assertEquals("Generated path string is wrong", "/vm/123456789/en_gb", urn.toPath());
     }
@@ -35,7 +36,16 @@ public class URNTest {
     public void createURNByValues() throws URNCreationException {
         URN urn = new URNImpl("vm", Arrays.asList("123456789", "en_GB"));
         assertEquals("Type is wrong", "vm", urn.getType());
-        assertEquals("Value is wrong", Arrays.asList("123456789","en_gb"), urn.getValues());
+        assertEquals("Value is wrong", Arrays.asList("123456789", "en_gb"), urn.getValues());
+        assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
+        assertEquals("Generated path string is wrong", "/vm/123456789/en_gb", urn.toPath());
+    }
+
+    @Test
+    public void createURNByVarArgValues() throws URNCreationException {
+        URN urn = new URNImpl("vm", "123456789", "en_GB");
+        assertEquals("Type is wrong", "vm", urn.getType());
+        assertEquals("Value is wrong", Arrays.asList("123456789", "en_gb"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
         assertEquals("Generated path string is wrong", "/vm/123456789/en_gb", urn.toPath());
     }
@@ -132,13 +142,18 @@ public class URNTest {
     }
 
     @Test(expected = URNCreationException.class)
-    public void urnTypeAndValues_missingValues() throws URNCreationException {
-        new URNImpl("vm", null);
+    public void urnTypeAndValues_missingValuesArgs() throws URNCreationException {
+        new URNImpl("vm", (String[]) null);
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void urnTypeAndValues_missingValuesList() throws URNCreationException {
+        new URNImpl("vm", (List<String>) null);
     }
 
     @Test(expected = URNCreationException.class)
     public void urnTypeAndValues_missingType() throws URNCreationException {
-        new URNImpl(null, Arrays.asList("a","b","c"));
+        new URNImpl(null, Arrays.asList("a", "b", "c"));
     }
 
     @Test(expected = URNCreationException.class)

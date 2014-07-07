@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.commons.urn;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -47,6 +48,13 @@ public class URNImpl implements URN {
     public URNImpl(String type, List<String> values) throws URNCreationException {
         if (type == null || values == null || values.isEmpty()) {
             throw new URNCreationException("Cannot validate the URN because type [" + type + "] or values [" + values + "] is null");
+        }
+        process(URN_PREFIX + URN_DELIMITER + type + URN_DELIMITER + StringUtils.join(values, URN_DELIMITER));
+    }
+
+    public URNImpl(String type, String... values) throws URNCreationException {
+        if (type == null || values == null || values.length == 0) {
+            throw new URNCreationException("Cannot validate the URN because type [" + type + "] or values [" + ArrayUtils.toString(values) + "] is null");
         }
         process(URN_PREFIX + URN_DELIMITER + type + URN_DELIMITER + StringUtils.join(values, URN_DELIMITER));
     }
