@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 public class URNImpl implements URN {
 
-    public static final String REGEXP_SECTION = "(?i)([a-z0-9-_+\\.%]+)";
+    public static final String REGEXP_SECTION = "(?!.*\\.\\.)(?i)([a-z0-9-_+\\.%]+)";
     public static final String REGEXP_URN = "(?i)" + URN_PREFIX + "(" + URN_DELIMITER + REGEXP_SECTION + "){2,}";
 
     private String type;

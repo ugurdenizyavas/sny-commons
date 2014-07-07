@@ -110,6 +110,8 @@ public class URNTest {
         assertFalse(urn.validateURN("urn:sku:a:"));
         assertFalse(urn.validateURN("urn:sku:a:::"));
         assertFalse(urn.validateURN("urn:sku:a:<script>"));
+        assertFalse(urn.validateURN("urn:sku:a:a/b:b"));
+        assertFalse(urn.validateURN("urn:sku:a:a..b:b"));
     }
 
     // ============================
