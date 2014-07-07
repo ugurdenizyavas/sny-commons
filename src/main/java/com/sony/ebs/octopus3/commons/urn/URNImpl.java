@@ -1,7 +1,6 @@
 package com.sony.ebs.octopus3.commons.urn;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -53,6 +52,11 @@ public class URNImpl implements URN {
         process(URN_PREFIX + URN_DELIMITER + type + URN_DELIMITER + StringUtils.join(values, URN_DELIMITER));
     }
 
+    /**
+     * @param type   type of the urn
+     * @param values Values as list of String
+     * @throws URNCreationException
+     */
     public URNImpl(String type, String... values) throws URNCreationException {
         if (type == null || values == null || values.length == 0) {
             throw new URNCreationException("Cannot validate the URN because type [" + type + "] or values [" + ArrayUtils.toString(values) + "] is null");
@@ -60,6 +64,11 @@ public class URNImpl implements URN {
         process(URN_PREFIX + URN_DELIMITER + type + URN_DELIMITER + StringUtils.join(values, URN_DELIMITER));
     }
 
+    /**
+     * @param parent parent URN, like "urn:a:b" to add c for "urn:a:b:c"
+     * @param values Values as list of String
+     * @throws URNCreationException
+     */
     public URNImpl(URN parent, String... values) throws URNCreationException {
         if (parent == null || values == null || values.length == 0) {
             throw new URNCreationException("Cannot validate the URN because type [" + type + "] or values [" + ArrayUtils.toString(values) + "] is null");
