@@ -1,6 +1,8 @@
 package com.sony.ebs.octopus3.commons.urn;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -104,23 +106,30 @@ public class URNImpl implements URN {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        URNImpl urn = (URNImpl) o;
-
-        if (type != null ? !type.equals(urn.type) : urn.type != null) return false;
-        if (values != null ? !values.equals(urn.values) : urn.values != null) return false;
-
-        return true;
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        URNImpl rhs = (URNImpl) obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(getType(), rhs.getType())
+                .append(getValues(), rhs.getValues())
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (values != null ? values.hashCode() : 0);
-        return result;
+        return new HashCodeBuilder(17, 37)
+                .append(getType())
+                .append(getValues())
+                .toHashCode();
     }
 
     /**
