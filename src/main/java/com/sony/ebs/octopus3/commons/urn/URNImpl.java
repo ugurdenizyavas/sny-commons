@@ -59,6 +59,13 @@ public class URNImpl implements URN {
         process(URN_PREFIX + URN_DELIMITER + type + URN_DELIMITER + StringUtils.join(values, URN_DELIMITER));
     }
 
+    public URNImpl(URN parent, String... values) throws URNCreationException {
+        if (parent == null || values == null || values.length == 0) {
+            throw new URNCreationException("Cannot validate the URN because type [" + type + "] or values [" + ArrayUtils.toString(values) + "] is null");
+        }
+        process(parent.toString() + URN_DELIMITER + StringUtils.join(values, URN_DELIMITER));
+    }
+
     /**
      * This constructor is used for creating URNs for given paths in filesystem. We assume that the base path is
      * a parent of the given file's path.

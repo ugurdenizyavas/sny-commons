@@ -51,6 +51,16 @@ public class URNTest {
     }
 
     @Test
+    public void createURNByValuesWithParent() throws URNCreationException {
+        URN parent = new URNImpl("amazon_feed", "global", "en_GB", "KaFa-1500");
+        URN urn = new URNImpl(parent, "product_info.csv");
+        assertEquals("Type is wrong", "amazon_feed", urn.getType());
+        assertEquals("Value is wrong", Arrays.asList("global", "en_gb", "kafa-1500", "product_info.csv"), urn.getValues());
+        assertEquals("Generated URN string is wrong", "urn:amazon_feed:global:en_gb:kafa-1500:product_info.csv", urn.toString());
+        assertEquals("Generated path string is wrong", "/amazon_feed/global/en_gb/kafa-1500/product_info.csv", urn.toPath());
+    }
+
+    @Test
     public void isCaseURNIdenticalWithLowerCaseURN() throws URNCreationException {
         URN urn = new URNImpl("URN:VM:UPPERCASE");
         assertEquals("Type is wrong", "vm", urn.getType());
