@@ -3,15 +3,11 @@ package com.sony.ebs.octopus3.commons.file;
 import org.junit.After;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -84,9 +80,24 @@ public class FileUtilsTest {
         assertFalse(filePath.toFile().exists());
     }
 
+
+    @Test
+    public void zipDirectory() throws IOException {
+        Path basePath = Paths.get(System.getProperty("java.io.tmpdir") + "/fileTest/a/b/c");
+        Path filePath1 = Paths.get(basePath.toString() + "/file1.txt");
+        Path filePath2 = Paths.get(basePath.toString() + "/file2.txt");
+        FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
+        FileUtils.writeFile(filePath2, "test".getBytes(), true, true);
+        List<Path> filesZipped = FileUtils.zipDirectory(Paths.get(basePath.getParent() + "/a.zip"), basePath);
+
+        assertTrue(Paths.get(basePath.getParent() + "/a.zip").toFile().exists());
+        assertEquals(filePath1, filesZipped.get(0));
+        assertEquals(filePath2, filesZipped.get(1));
+    }
+
     @After
     public void doAfter() {
-        Path basePath = Paths.get(System.getProperty("java.io.tmpdir") + "/fileTest");
+        Path basePath = Paths.get(System.getProperty("java.io.tmpdir") + "/fileTest/a/b/c");
         FileUtils.delete(basePath);
     }
 

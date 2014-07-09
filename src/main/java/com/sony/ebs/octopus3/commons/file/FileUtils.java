@@ -68,4 +68,15 @@ public class FileUtils {
         }
         return true;
     }
+
+    public static List<Path> zipDirectory(Path zipFilePath, Path folderToZip) {
+        try {
+            ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath);
+            Files.walkFileTree(folderToZip, visitor);
+            return visitor.getFilesTracked();
+        } catch (IOException e) {
+            logger.debug("Unable to zip directory [" + folderToZip + "] to path [" + zipFilePath + "] due to errors", e);
+            return null;
+        }
+    }
 }
