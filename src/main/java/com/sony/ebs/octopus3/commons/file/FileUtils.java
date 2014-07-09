@@ -23,34 +23,49 @@ public class FileUtils {
         throw new InstantiationException("Utility classes should not be instantiated");
     }
 
+    /**
+     * Deletes the given file or folder. If any file or folder cannot be deleted due to any issues,
+     * deletion process continues with the other ones.
+     *
+     * @param dir as the path of file or folder to delete
+     * @return List of deleted paths
+     */
     public static List<Path> delete(Path dir) {
-        try {
-            TrackingFileVisitor<Path> visitor = new TrackingFileVisitor<Path>() {
 
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        TrackingFileVisitor<Path> visitor = new TrackingFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                try {
                     Files.deleteIfExists(file);
                     getFilesTracked().add(file);
-                    return FileVisitResult.CONTINUE;
+                } catch (Exception e) {
+                    logger.debug("Unable to delete file [" + file + "] due to errors", e);
                 }
+                return FileVisitResult.CONTINUE;
+            }
 
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    if (exc == null) {
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                if (exc == null) {
+                    try {
                         Files.deleteIfExists(dir);
-                        return FileVisitResult.CONTINUE;
-                    } else {
-                        throw exc;
+                    } catch (Exception e) {
+                        logger.debug("Unable to delete directory [" + dir + "] due to errors", e);
                     }
+                } else {
+                    logger.debug("Unable to list directory [" + dir + "] due to errors", exc);
                 }
-            };
+                return FileVisitResult.CONTINUE;
+            }
+        };
 
+        try {
             Files.walkFileTree(dir, visitor);
-            return visitor.getFilesTracked();
         } catch (Exception e) {
-            logger.debug("Unable to delete directory [" + dir + "] due to errors", e);
-            return new ArrayList<Path>();
+            logger.debug("Unable to walk in directory [" + dir + "] due to errors", e);
         }
+        return visitor.getFilesTracked();
     }
 
     public static boolean writeFile(Path path, byte[] content, boolean override, boolean createMissingFolders) {
@@ -69,15 +84,15 @@ public class FileUtils {
         return true;
     }
 
-    public static List<Path> zipDirectory(Path zipFilePath, Path folderToZip) {
+    public static List<Path> zip(Path zipFilePath, Path fileOrFolderToZip) {
         try {
             ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath);
-            Files.walkFileTree(folderToZip, visitor);
+            Files.walkFileTree(fileOrFolderToZip, visitor);
             visitor.fileSystem.close();
             return visitor.getFilesTracked();
-        } catch (IOException e) {
-            logger.debug("Unable to zip directory [" + folderToZip + "] to path [" + zipFilePath + "] due to errors", e);
-            return null;
+        } catch (Exception e) {
+            logger.debug("Unable to zip directory [" + fileOrFolderToZip + "] to path [" + zipFilePath + "] due to errors", e);
+            return new ArrayList<Path>();
         }
     }
 }
