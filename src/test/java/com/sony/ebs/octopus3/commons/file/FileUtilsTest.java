@@ -67,35 +67,39 @@ public class FileUtilsTest {
     public void deleteDirectory() throws Exception {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
         FileUtils.writeFile(filePath2, "test".getBytes(), true, true);
-        List<Path> filesDeleted = FileUtils.delete(basePath);
+        FileOperationResult result = FileUtils.delete(basePath);
 
         assertFalse(basePath.toFile().exists());
-        assertEquals(filePath1, filesDeleted.get(0));
-        assertEquals(filePath2, filesDeleted.get(1));
+        assertEquals(filePath1, result.getTracked().get(0));
+        assertEquals(filePath2, result.getTracked().get(1));
+        assertTrue(result.getFailed().isEmpty());
     }
 
     @Test
     public void deleteFile() throws Exception {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
 
-        List<Path> filesDeleted = FileUtils.delete(filePath1);
-        assertEquals(filePath1, filesDeleted.get(0));
+        FileOperationResult result = FileUtils.delete(filePath1);
+        assertEquals(filePath1, result.getTracked().get(0));
 
         assertTrue(basePath.toFile().exists());
         assertFalse(filePath1.toFile().exists());
+        assertTrue(result.getFailed().isEmpty());
     }
 
     @Test
     public void deleteDirectory_unableToDelete_missingFolder() throws Exception {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
 
-        List<Path> filesDeleted = FileUtils.delete(basePath);
-        assertEquals(filePath1, filesDeleted.get(0));
+        FileOperationResult result = FileUtils.delete(basePath);
+        assertEquals(filePath1, result.getTracked().get(0));
         assertFalse(basePath.toFile().exists());
+        assertTrue(result.getFailed().isEmpty());
 
         // delete already deleted folder
-        filesDeleted = FileUtils.delete(basePath);
-        assertTrue(filesDeleted.isEmpty());
+        result = FileUtils.delete(basePath);
+        assertTrue(result.getTracked().isEmpty());
+        assertTrue(result.getTracked().isEmpty());
     }
 
     @Test
@@ -116,16 +120,19 @@ public class FileUtilsTest {
             public void checkPermission(Permission perm) {
             }
         });
-        List<Path> filesDeleted = FileUtils.delete(basePath);
+        FileOperationResult result = FileUtils.delete(basePath);
 
         assertTrue(basePath.toFile().exists());
         assertFalse(filePath1.toFile().exists());
         assertTrue(filePath2.toFile().exists());
         assertFalse(filePath3.toFile().exists());
 
-        assertEquals(2, filesDeleted.size());
-        assertEquals(filePath1, filesDeleted.get(0));
-        assertEquals(filePath3, filesDeleted.get(1));
+        assertEquals(2, result.getTracked().size());
+        assertEquals(filePath1, result.getTracked().get(0));
+        assertEquals(filePath3, result.getTracked().get(1));
+
+        assertEquals(1, result.getFailed().size());
+        assertEquals(filePath2, result.getFailed().get(0));
     }
 
     @Test
@@ -145,15 +152,17 @@ public class FileUtilsTest {
             public void checkPermission(Permission perm) {
             }
         });
-        List<Path> filesDeleted = FileUtils.delete(basePath);
+        FileOperationResult result = FileUtils.delete(basePath);
 
         assertTrue(basePath.toFile().exists());
         assertFalse(filePath1.toFile().exists());
         assertFalse(filePath2.toFile().exists());
 
-        assertEquals(2, filesDeleted.size());
-        assertEquals(filePath1, filesDeleted.get(0));
-        assertEquals(filePath2, filesDeleted.get(1));
+        assertEquals(2, result.getTracked().size());
+        assertEquals(filePath1, result.getTracked().get(0));
+        assertEquals(filePath2, result.getTracked().get(1));
+
+        assertTrue(result.getFailed().isEmpty());
     }
 
     @Test
@@ -161,11 +170,11 @@ public class FileUtilsTest {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
         FileUtils.writeFile(filePath2, "test".getBytes(), true, true);
         Path zipPath = Paths.get(basePath.getParent() + "/a.zip");
-        List<Path> filesZipped = FileUtils.zip(zipPath, basePath);
+        FileOperationResult result = FileUtils.zip(zipPath, basePath);
 
         assertTrue(Paths.get(basePath.getParent() + "/a.zip").toFile().exists());
-        assertEquals(filePath1, filesZipped.get(0));
-        assertEquals(filePath2, filesZipped.get(1));
+        assertEquals(filePath1, result.getTracked().get(0));
+        assertEquals(filePath2, result.getTracked().get(1));
 
         validateZip(zipPath, Arrays.asList("file1.txt", "file2.txt"));
     }
@@ -174,26 +183,26 @@ public class FileUtilsTest {
     public void zipFile() throws IOException {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
         Path zipPath = Paths.get(filePath1.getParent() + "/a.zip");
-        List<Path> filesZipped = FileUtils.zip(zipPath, filePath1);
+        FileOperationResult result = FileUtils.zip(zipPath, filePath1);
 
         assertTrue(zipPath.toFile().exists());
-        assertEquals(filePath1, filesZipped.get(0));
+        assertEquals(filePath1, result.getTracked().get(0));
 
         validateZip(zipPath, Arrays.asList("file1.txt"));
     }
 
     @Test
     public void zipFile_noFilesToZip() throws IOException {
-        List<Path> filesZipped = FileUtils.zip(Paths.get(filePath1.getParent() + "/a.zip"), filePath1);
+        FileOperationResult result = FileUtils.zip(Paths.get(filePath1.getParent() + "/a.zip"), filePath1);
 
         assertFalse(Paths.get(filePath1.getParent() + "/a.zip").toFile().exists());
-        assertEquals(0, filesZipped.size());
+        assertEquals(0, result.getTracked().size());
     }
 
     @Test
     public void zipFile_missingData() throws IOException {
-        List<Path> filesZipped = FileUtils.zip(null, null);
-        assertEquals(0, filesZipped.size());
+        FileOperationResult result = FileUtils.zip(null, null);
+        assertEquals(0, result.getTracked().size());
     }
 
     @Test(expected = InstantiationException.class)

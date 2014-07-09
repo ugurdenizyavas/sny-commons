@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +31,18 @@ public class FileUtils {
      * @param dir as the path of file or folder to delete
      * @return List of deleted paths
      */
-    public static List<Path> delete(Path dir) {
+    public static FileOperationResult delete(Path dir) {
+        final FileOperationResult result = new FileOperationResult();
 
-        TrackingFileVisitor<Path> visitor = new TrackingFileVisitor<Path>() {
+        SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 try {
                     Files.deleteIfExists(file);
-                    getFilesTracked().add(file);
+                    result.addTracked(file);
                 } catch (Exception e) {
+                    result.addFailed(file);
                     logger.debug("Unable to delete file [" + file + "] due to errors", e);
                 }
                 return FileVisitResult.CONTINUE;
@@ -65,7 +68,7 @@ public class FileUtils {
         } catch (Exception e) {
             logger.debug("Unable to walk in directory [" + dir + "] due to errors", e);
         }
-        return visitor.getFilesTracked();
+        return result;
     }
 
     public static boolean writeFile(Path path, byte[] content, boolean override, boolean createMissingFolders) {
@@ -84,15 +87,15 @@ public class FileUtils {
         return true;
     }
 
-    public static List<Path> zip(Path zipFilePath, Path fileOrFolderToZip) {
+    public static FileOperationResult zip(Path zipFilePath, Path fileOrFolderToZip) {
+        FileOperationResult result = new FileOperationResult();
         try {
-            ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath);
+            ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath, result);
             Files.walkFileTree(fileOrFolderToZip, visitor);
             visitor.fileSystem.close();
-            return visitor.getFilesTracked();
         } catch (Exception e) {
             logger.debug("Unable to zip directory [" + fileOrFolderToZip + "] to path [" + zipFilePath + "] due to errors", e);
-            return new ArrayList<Path>();
         }
+        return result;
     }
 }

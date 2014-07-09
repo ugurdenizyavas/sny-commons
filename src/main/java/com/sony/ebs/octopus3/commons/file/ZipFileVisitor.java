@@ -2,12 +2,7 @@ package com.sony.ebs.octopus3.commons.file;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystems;
-import java.nio.file.FileSystem;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +11,13 @@ import java.util.Map;
  * author: TRYavasU
  * date: 08/07/2014
  */
-public class ZipFileVisitor extends TrackingFileVisitor<Path> {
+public class ZipFileVisitor extends SimpleFileVisitor<Path> {
 
     FileSystem fileSystem;
+    FileOperationResult result;
 
-    ZipFileVisitor(Path zipFilePath) throws IOException {
+    ZipFileVisitor(Path zipFilePath, FileOperationResult result) throws IOException {
+        this.result = result;
         Map<String, String> env = new HashMap<String, String>();
         // check if file exists
         env.put("create", String.valueOf(!zipFilePath.toFile().exists()));
@@ -42,7 +39,7 @@ public class ZipFileVisitor extends TrackingFileVisitor<Path> {
         // copy fileToZip to its location in zip
         Files.copy(fileToZip, fileZipped, StandardCopyOption.REPLACE_EXISTING);
 
-        getFilesTracked().add(fileToZip);
+        result.addTracked(fileToZip);
         return FileVisitResult.CONTINUE;
     }
 
