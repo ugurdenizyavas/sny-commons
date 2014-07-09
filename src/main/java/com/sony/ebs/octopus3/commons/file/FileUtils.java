@@ -73,6 +73,7 @@ public class FileUtils {
         try {
             ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath);
             Files.walkFileTree(folderToZip, visitor);
+            visitor.fileSystem.close();
             return visitor.getFilesTracked();
         } catch (IOException e) {
             logger.debug("Unable to zip directory [" + folderToZip + "] to path [" + zipFilePath + "] due to errors", e);
