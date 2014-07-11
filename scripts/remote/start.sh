@@ -58,14 +58,15 @@ while [ $# -gt 0 ]; do
 done
 set -- $realargs
 
-if [ -z "$jar" ] || [ -z "$port" ] || [ -z "$logDirectory" ] || [ -z "$environment" ]; then
-    usage
-    return
-fi
-
 echo "==============================="
 echo "START"
 echo "==============================="
+
+if [ -z "$jar" ] || [ -z "$port" ] || [ -z "$logDirectory" ] || [ -z "$environment" ] || [ -z "$name" ]; then
+    echo "[ABORTED] Mandatory fields are missing. Please check the usage."
+    usage
+    return
+fi
 
 pid=`ps ax | grep java | grep "ratpack" | grep "$name" | awk '{print $1}'`
 if [ -n "$pid" ]; then
