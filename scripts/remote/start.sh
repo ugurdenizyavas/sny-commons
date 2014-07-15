@@ -68,6 +68,12 @@ if [ -z "$jar" ] || [ -z "$port" ] || [ -z "$logDirectory" ] || [ -z "$environme
     return
 fi
 
+if [ ! -f "/opt/shared/to_deploy/$jar" ]; then
+    echo "FatJar does not exist. Build it with \"gradle fatjar\" command and deploy."
+    echo "Quited"
+    exit 0
+fi
+
 pid=`ps ax | grep java | grep "ratpack" | grep "$name" | awk '{print $1}'`
 if [ -n "$pid" ]; then
     kill -9 $pid
@@ -80,20 +86,23 @@ if [ -n "$pid" ]; then
     exit 1
 fi
 
+mkdir -p "$logDirectory"
 echo "[START  ] Service is starting"
-nohup /opt/java/bin/java -Dratpack.port=$port -DlogDirectory=$logDirectory -Denvironment=$environment -Dname=$name -jar /opt/$jar 2>/dev/null &
+nohup /opt/java/bin/java -Dratpack.port=$port -DlogDirectory=$logDirectory -Denvironment=$environment -Dname=$name -jar /opt/shared/to_deploy/$jar 2>/dev/null &
 sleep 10
 echo "[START  ] Service started"
 
-cp "/opt/${jar}" "/opt/archive/packages/${now}-${jar}"
+mkdir -p "/opt/archive/packages/"
+cp "/opt/shared/to_deploy/${jar}" "/opt/archive/packages/${now}-${jar}"
 echo "[ARCHIVE] Package is archived to /opt/archive/packages/ directory"
 
+mkdir -p "/opt/archive/logs/"
 cp -r "$logDirectory" "/opt/archive/logs/${now}-logs"
 echo "[ARCHIVE] Logs are archived to /opt/archive/logs/ directory"
 
 pid=`ps ax | grep java | grep "ratpack" | grep "$name" | awk '{print $1}'`
 if [ -z "$pid" ]; then
-    echo "[ABORTED] Process [id:$pid] cannot be killed. Aborted."
+    echo "[ABORTED] Process seems missing. Aborted."
     exit 1
 else
     echo "[DONE   ] Process [id:$pid] is started. Done."

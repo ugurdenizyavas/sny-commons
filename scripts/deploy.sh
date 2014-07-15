@@ -59,9 +59,9 @@ USAGE
       remote server one by one.
 
       Example usage:
-        Deploy via vagrant: ../octopus3-commons/scripts/deploy.sh -i 43.216.132.90 -u GWTSYN_dev_rw -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-fat.jar -l /opt/logs/repository -e dev -n octopus3-repository-service -v 169.254.14.248
-        Deploy directly   : ../octopus3-commons/scripts/deploy.sh -i 43.216.132.90 -u GWTSYN_dev_rw -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-fat.jar -l /opt/logs/repository -e dev -n octopus3-repository-service
-        Restart directly  : ../octopus3-commons/scripts/deploy.sh -i 43.216.132.90 -u GWTSYN_dev_rw -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-fat.jar -l /opt/logs/repository -e dev -n octopus3-repository-service -r
+        Deploy via vagrant: ../octopus3-commons/scripts/deploy.sh -i 43.216.132.90 -u GWTSYN_dev_rw -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-all.jar -l /opt/logs/repository -e dev -n octopus3-repository-service -v 169.254.14.248
+        Deploy directly   : ../octopus3-commons/scripts/deploy.sh -i 43.216.132.90 -u GWTSYN_dev_rw -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-all.jar -l /opt/logs/repository -e dev -n octopus3-repository-service
+        Restart directly  : ../octopus3-commons/scripts/deploy.sh -i 43.216.132.90 -u GWTSYN_dev_rw -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-all.jar -l /opt/logs/repository -e dev -n octopus3-repository-service -r
 
 DISCUSSIONS
       The script first uploads the file remote server and runs \"start.sh\" to make it deployed and started.
@@ -135,28 +135,33 @@ if [ -z "$ip" ] || [ -z "$userName" ] || [ -z "$port" ] || [ -z "$fatJarName" ] 
     return
 fi
 
-fatJarPath="build/libs/$fatJarName"
+fatJarPath="$fatJarName"
 
 if [ ! -f "$fatJarPath" ]; then
-    echo "FatJar does not exist. Build it with \"gradle fatjar\" command."
+    echo "UberJar does not exist. Build it with \"gradle shadowJar\" command."
     echo "Quited"
     exit 0
 fi
 
+filename=$(basename "${fatJarName}")
+extension="${filename##*.}"
+filename="${filename%.*}"
+fatJarFileName="${filename}.${extension}"
+
 if [ -z "$vagrant" ];then
     if [ -z "$restart" ]; then
-        scp $fatJarPath $userName@$ip:/opt
+        scp $fatJarPath $userName@$ip:/opt/shared/to_deploy
         echo "[UPLOAD ] Package is uploaded to server"
     fi
-    ssh -t -x $userName@$ip "/opt/start.sh -p $port -l $logDirectory -e $environment -n $name -j fatJarName"
+    ssh -t -x $userName@$ip "/opt/shared/scripts/start.sh -p $port -l $logDirectory -e $environment -n $name -j $fatJarFileName"
     echo "[TRIGGER] Start script is triggered"
 else
     if [ -z "$restart" ]; then
         scp $fatJarPath vagrant@$vagrant:
         echo "[UPLOAD ] Package is uploaded to vagrant"
-        ssh -t -x vagrant@$vagrant "scp $fatJarName $userName@$ip:/opt"
+        ssh -t -x vagrant@$vagrant "scp $fatJarFileName $userName@$ip:/opt/shared/to_deploy"
         echo "[UPLOAD ] Package is uploaded to server"
     fi
     echo "[TRIGGER] Start script is triggered"
-    ssh -t -x vagrant@$vagrant "ssh -t -x $userName@$ip \"/opt/start.sh -p $port -l $logDirectory -e $environment -n $name -j $fatJarName\""
+    ssh -t -x vagrant@$vagrant "ssh -t -x $userName@$ip \"/opt/shared/scripts/start.sh -p $port -l $logDirectory -e $environment -n $name -j $fatJarFileName\""
 fi
