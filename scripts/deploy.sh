@@ -150,7 +150,7 @@ fatJarFileName="${filename}.${extension}"
 
 if [ -z "$vagrant" ];then
     if [ -z "$restart" ]; then
-        scp $fatJarPath $userName@$ip:/opt/shared/to_deploy
+        scp $fatJarPath $userName@$ip:/opt/shared/to_deploy/
         echo "[UPLOAD ] Package is uploaded to server"
     fi
     ssh -t -x $userName@$ip "/opt/shared/scripts/start.sh -p $port -l $logDirectory -e $environment -n $name -j $fatJarFileName"
@@ -159,7 +159,7 @@ else
     if [ -z "$restart" ]; then
         scp $fatJarPath vagrant@$vagrant:
         echo "[UPLOAD ] Package is uploaded to vagrant"
-        ssh -t -x vagrant@$vagrant "scp $fatJarFileName $userName@$ip:/opt/shared/to_deploy"
+        ssh -t -x vagrant@$vagrant "scp $fatJarFileName $userName@$ip:/opt/shared/to_deploy/"
         echo "[UPLOAD ] Package is uploaded to server"
     fi
     echo "[TRIGGER] Start script is triggered"

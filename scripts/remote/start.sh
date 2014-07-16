@@ -2,7 +2,8 @@
 
 ####
 #
-# Example usage: ./start.sh -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-fat.jar
+# Example usage:
+# ./start.sh -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-all.jar -e dev -l /opt/logs/repository -n octopus-repository-service
 #
 ####
 
@@ -69,7 +70,7 @@ if [ -z "$jar" ] || [ -z "$port" ] || [ -z "$logDirectory" ] || [ -z "$environme
 fi
 
 if [ ! -f "/opt/shared/to_deploy/$jar" ]; then
-    echo "FatJar does not exist. Build it with \"gradle fatjar\" command and deploy."
+    echo "UberJar does not exist. Build it with \"gradle shadowJar\" command and deploy."
     echo "Quited"
     exit 0
 fi
