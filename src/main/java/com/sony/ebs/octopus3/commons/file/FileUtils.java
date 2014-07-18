@@ -90,7 +90,7 @@ public class FileUtils {
     public static FileOperationResult zip(Path zipFilePath, Path fileOrFolderToZip) {
         FileOperationResult result = new FileOperationResult();
         try {
-            ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath, result);
+            ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath, result, fileOrFolderToZip);
             Files.walkFileTree(fileOrFolderToZip, visitor);
             visitor.fileSystem.close();
         } catch (Exception e) {

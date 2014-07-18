@@ -15,9 +15,12 @@ public class ZipFileVisitor extends SimpleFileVisitor<Path> {
 
     FileSystem fileSystem;
     FileOperationResult result;
+    Path fileOrFolderToZip;
 
-    ZipFileVisitor(Path zipFilePath, FileOperationResult result) throws IOException {
+    ZipFileVisitor(Path zipFilePath, FileOperationResult result, Path fileOrFolderToZip) throws IOException {
         this.result = result;
+        this.fileOrFolderToZip = fileOrFolderToZip;
+
         Map<String, String> env = new HashMap<String, String>();
         // check if file exists
         env.put("create", String.valueOf(!zipFilePath.toFile().exists()));
@@ -29,15 +32,18 @@ public class ZipFileVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path fileToZip, BasicFileAttributes attrs) throws IOException {
+        //Default file behavior is to include file in zip; default folder behavior is not to include folder in zip
+        Path root = Files.isRegularFile(fileOrFolderToZip) ? fileOrFolderToZip.getParent() : fileOrFolderToZip;
+
+        Path locationInZip = fileSystem.getPath(root.relativize(fileToZip).toString());
+
         //Create folder structure in zip file system
-        Path fileZipped = fileSystem.getPath(fileToZip.getFileName().toString());
-        //Create parent folder
-        Path parent = fileZipped.getParent();
+        Path parent = locationInZip.getParent();
         if (parent != null && Files.notExists(parent)) {
             Files.createDirectories(parent);
         }
         // copy fileToZip to its location in zip
-        Files.copy(fileToZip, fileZipped, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(fileToZip, locationInZip, StandardCopyOption.REPLACE_EXISTING);
 
         result.addTracked(fileToZip);
         return FileVisitResult.CONTINUE;

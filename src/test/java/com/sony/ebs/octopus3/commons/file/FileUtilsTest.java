@@ -24,9 +24,12 @@ import static org.junit.Assert.assertEquals;
 public class FileUtilsTest {
 
     Path basePath = Paths.get(System.getProperty("java.io.tmpdir") + "/fileTest/a/b/c");
-    Path filePath1 = Paths.get(basePath.toString() + "/file1.txt");
-    Path filePath2 = Paths.get(basePath.toString() + "/file2.txt");
-    Path filePath3 = Paths.get(basePath.toString() + "/file3.txt");
+    Path filePath1 = Paths.get(basePath + "/file1.txt");
+    Path filePath2 = Paths.get(basePath + "/file2.txt");
+    Path filePath3 = Paths.get(basePath + "/file3.txt");
+    Path filePath4 = Paths.get(basePath + "/d/file4.txt");
+    Path filePath5 = Paths.get(basePath + "/d/e/file5.txt");
+    Path zipPath = Paths.get(basePath.getParent() + "/a.zip");
 
     @Before
     public void doBefore() {
@@ -37,6 +40,8 @@ public class FileUtilsTest {
     public void doAfter() {
         resetFilePermissions();
         FileUtils.delete(basePath);
+        //Delete zip file in zip tests
+        FileUtils.delete(zipPath);
     }
 
     @Test
@@ -169,7 +174,6 @@ public class FileUtilsTest {
     public void zipDirectory() throws IOException {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
         FileUtils.writeFile(filePath2, "test".getBytes(), true, true);
-        Path zipPath = Paths.get(basePath.getParent() + "/a.zip");
         FileOperationResult result = FileUtils.zip(zipPath, basePath);
 
         assertTrue(Paths.get(basePath.getParent() + "/a.zip").toFile().exists());
@@ -182,7 +186,6 @@ public class FileUtilsTest {
     @Test
     public void zipFile() throws IOException {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
-        Path zipPath = Paths.get(filePath1.getParent() + "/a.zip");
         FileOperationResult result = FileUtils.zip(zipPath, filePath1);
 
         assertTrue(zipPath.toFile().exists());
@@ -203,6 +206,25 @@ public class FileUtilsTest {
     public void zipFile_missingData() throws IOException {
         FileOperationResult result = FileUtils.zip(null, null);
         assertEquals(0, result.getTracked().size());
+    }
+
+    @Test
+    public void zipStructure() throws IOException {
+        FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
+        FileUtils.writeFile(filePath2, "test".getBytes(), true, true);
+        Files.createDirectory(Paths.get(basePath + "/d"));
+        FileUtils.writeFile(filePath4, "test".getBytes(), true, true);
+        Files.createDirectory(Paths.get(basePath + "/d/e"));
+        FileUtils.writeFile(filePath5, "test".getBytes(), true, true);
+        FileOperationResult result = FileUtils.zip(zipPath, basePath);
+
+        assertTrue(Paths.get(basePath.getParent() + "/a.zip").toFile().exists());
+        assertEquals(filePath5, result.getTracked().get(0));
+        assertEquals(filePath4, result.getTracked().get(1));
+        assertEquals(filePath1, result.getTracked().get(2));
+        assertEquals(filePath2, result.getTracked().get(3));
+
+        validateZip(zipPath, Arrays.asList("d/", "d/e/", "d/e/file5.txt",  "d/file4.txt", "file1.txt", "file2.txt"));
     }
 
     @Test(expected = InstantiationException.class)
@@ -236,7 +258,7 @@ public class FileUtilsTest {
 
         ZipEntry entry;
         List<String> zipContent = new ArrayList<String>();
-        while((entry = zis.getNextEntry()) != null) {
+        while ((entry = zis.getNextEntry()) != null) {
             zipContent.add(entry.getName());
         }
         assertArrayEquals(content.toArray(), zipContent.toArray());
