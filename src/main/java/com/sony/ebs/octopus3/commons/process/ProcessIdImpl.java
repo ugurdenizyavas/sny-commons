@@ -25,4 +25,10 @@ public class ProcessIdImpl implements ProcessId {
     public String getId() {
         return processId;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).append("(id=").append(processId != null ? processId : "").append(")").toString();
+    }
+
 }

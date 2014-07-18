@@ -22,4 +22,16 @@ public class ProcessIdTest {
         ProcessId processId = new ProcessIdImpl("abc");
         assertEquals("abc", processId.getId());
     }
+
+    @Test
+    public void testToString() {
+        ProcessId processId = new ProcessIdImpl("abc");
+        assertEquals("ProcessIdImpl(id=abc)", processId.toString());
+    }
+
+    @Test
+    public void testToStringForNullId() {
+        ProcessId processId = new ProcessIdImpl(null);
+        assertEquals("ProcessIdImpl(id=)", processId.toString());
+    }
 }
