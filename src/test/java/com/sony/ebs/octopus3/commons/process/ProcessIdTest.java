@@ -2,8 +2,7 @@ package com.sony.ebs.octopus3.commons.process;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @author trerginl
@@ -32,6 +31,6 @@ public class ProcessIdTest {
     @Test
     public void testToStringForNullId() {
         ProcessId processId = new ProcessIdImpl(null);
-        assertEquals("ProcessIdImpl(id=)", processId.toString());
+        assertTrue(processId.toString().matches("ProcessIdImpl\\(id=.*\\)"));
     }
 }
