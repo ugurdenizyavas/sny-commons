@@ -9,8 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author trerginl
@@ -65,6 +63,7 @@ public class FileUtils {
 
         try {
             Files.walkFileTree(dir, visitor);
+            logger.debug("File/folder in path [" + dir + "] is deleted");
         } catch (Exception e) {
             logger.debug("Unable to walk in directory [" + dir + "] due to errors", e);
         }
@@ -93,6 +92,7 @@ public class FileUtils {
             ZipFileVisitor visitor = new ZipFileVisitor(zipFilePath, result, fileOrFolderToZip);
             Files.walkFileTree(fileOrFolderToZip, visitor);
             visitor.fileSystem.close();
+            logger.debug("File/folder in path [" + fileOrFolderToZip + "] is zipped into [" + zipFilePath + "]");
         } catch (Exception e) {
             logger.debug("Unable to zip directory [" + fileOrFolderToZip + "] to path [" + zipFilePath + "] due to errors", e);
         }
