@@ -3,7 +3,7 @@
 ####
 #
 # Example usage:
-# ./start.sh -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-all.jar -e dev -l /opt/logs/repository -n octopus-repository-service
+# ./start.sh -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-Shadow.jar -e dev -l /opt/logs/repository -n octopus-repository-service
 #
 ####
 
@@ -79,6 +79,8 @@ pid=`ps ax | grep java | grep "ratpack" | grep "$name" | awk '{print $1}'`
 if [ -n "$pid" ]; then
     kill -9 $pid
     echo "[STOP   ] Existing instance is killed [pid:$pid]"
+else
+    echo "[CHECK  ] No existing instance is found"
 fi
 
 pid=`ps ax | grep java | grep "ratpack" | grep "$name" | awk '{print $1}'`
