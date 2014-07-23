@@ -37,6 +37,9 @@ apply plugin: "java"
 apply plugin: "idea"
 apply plugin: "nexus"
 apply plugin: "groovy"
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-maven'
+apply plugin: 'propdeps-idea'
 
 //======================================================================
 // CONFIGURATIONS
@@ -54,10 +57,6 @@ idea {
 
     }
 }
-
-apply plugin: 'propdeps'
-apply plugin: 'propdeps-maven'
-apply plugin: 'propdeps-idea'
 
 configurations.compile.transitive = false
 configurations.provided.transitive = false

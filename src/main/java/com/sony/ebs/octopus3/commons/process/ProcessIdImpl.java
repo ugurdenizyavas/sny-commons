@@ -1,5 +1,7 @@
 package com.sony.ebs.octopus3.commons.process;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.UUID;
 
 /**
@@ -18,7 +20,10 @@ public class ProcessIdImpl implements ProcessId {
     }
 
     public ProcessIdImpl(String processId) {
-        this.processId = processId;
+        this();
+        if (StringUtils.isNotEmpty(processId)) {
+            this.processId = processId;
+        }
     }
 
     @Override
