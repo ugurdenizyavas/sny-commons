@@ -40,6 +40,7 @@ apply plugin: "groovy"
 apply plugin: 'propdeps'
 apply plugin: 'propdeps-maven'
 apply plugin: 'propdeps-idea'
+apply plugin: 'maven-publish'
 
 //======================================================================
 // CONFIGURATIONS
@@ -61,6 +62,14 @@ idea {
 configurations.compile.transitive = false
 configurations.provided.transitive = false
 configurations.optional.transitive = false
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.artifactId = project.name
+    }
+}
+
 
 //======================================================================
 // DEPENDENCIES
