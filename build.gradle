@@ -4,7 +4,6 @@
 
 version = '1.1-SNAPSHOT'
 group = 'com.sony.ebs.octopus3'
-def artifact = 'octopus3-commons'
 
 //======================================================================
 // REPOSITORIES
@@ -63,14 +62,6 @@ idea {
 configurations.compile.transitive = false
 configurations.provided.transitive = false
 configurations.optional.transitive = false
-
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.artifactId = artifact
-    }
-}
-
 
 //======================================================================
 // DEPENDENCIES
