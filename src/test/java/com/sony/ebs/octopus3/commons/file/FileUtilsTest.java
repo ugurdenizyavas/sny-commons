@@ -261,7 +261,10 @@ public class FileUtilsTest {
         while ((entry = zis.getNextEntry()) != null) {
             zipContent.add(entry.getName());
         }
-        assertArrayEquals(content.toArray(), zipContent.toArray());
+        assertEquals(content.size(), zipContent.size());
+        for (String ix : content) {
+            zipContent.contains(ix);
+        }
     }
 
 }
