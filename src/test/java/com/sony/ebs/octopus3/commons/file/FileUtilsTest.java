@@ -75,8 +75,8 @@ public class FileUtilsTest {
         FileOperationResult result = FileUtils.delete(basePath);
 
         assertFalse(basePath.toFile().exists());
-        assertEquals(filePath1, result.getTracked().get(0));
-        assertEquals(filePath2, result.getTracked().get(1));
+        assertTrue(result.getTracked().contains(filePath1));
+        assertTrue(result.getTracked().contains(filePath2));
         assertTrue(result.getFailed().isEmpty());
     }
 
@@ -97,7 +97,7 @@ public class FileUtilsTest {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
 
         FileOperationResult result = FileUtils.delete(basePath);
-        assertEquals(filePath1, result.getTracked().get(0));
+        assertTrue(result.getTracked().contains(filePath1));
         assertFalse(basePath.toFile().exists());
         assertTrue(result.getFailed().isEmpty());
 
@@ -133,11 +133,11 @@ public class FileUtilsTest {
         assertFalse(filePath3.toFile().exists());
 
         assertEquals(2, result.getTracked().size());
-        assertEquals(filePath1, result.getTracked().get(0));
-        assertEquals(filePath3, result.getTracked().get(1));
+        assertTrue(result.getTracked().contains(filePath1));
+        assertTrue(result.getTracked().contains(filePath3));
 
         assertEquals(1, result.getFailed().size());
-        assertEquals(filePath2, result.getFailed().get(0));
+        assertTrue(result.getFailed().contains(filePath2));
     }
 
     @Test
@@ -164,8 +164,8 @@ public class FileUtilsTest {
         assertFalse(filePath2.toFile().exists());
 
         assertEquals(2, result.getTracked().size());
-        assertEquals(filePath1, result.getTracked().get(0));
-        assertEquals(filePath2, result.getTracked().get(1));
+        assertTrue(result.getTracked().contains(filePath1));
+        assertTrue(result.getTracked().contains(filePath2));
 
         assertTrue(result.getFailed().isEmpty());
     }
@@ -177,8 +177,8 @@ public class FileUtilsTest {
         FileOperationResult result = FileUtils.zip(zipPath, basePath);
 
         assertTrue(Paths.get(basePath.getParent() + "/a.zip").toFile().exists());
-        assertEquals(filePath1, result.getTracked().get(0));
-        assertEquals(filePath2, result.getTracked().get(1));
+        assertTrue(result.getTracked().contains(filePath1));
+        assertTrue(result.getTracked().contains(filePath2));
 
         validateZip(zipPath, Arrays.asList("file1.txt", "file2.txt"));
     }
@@ -189,7 +189,7 @@ public class FileUtilsTest {
         FileOperationResult result = FileUtils.zip(zipPath, filePath1);
 
         assertTrue(zipPath.toFile().exists());
-        assertEquals(filePath1, result.getTracked().get(0));
+        assertTrue(result.getTracked().contains(filePath1));
 
         validateZip(zipPath, Arrays.asList("file1.txt"));
     }
@@ -219,10 +219,10 @@ public class FileUtilsTest {
         FileOperationResult result = FileUtils.zip(zipPath, basePath);
 
         assertTrue(Paths.get(basePath.getParent() + "/a.zip").toFile().exists());
-        assertEquals(filePath5, result.getTracked().get(0));
-        assertEquals(filePath4, result.getTracked().get(1));
-        assertEquals(filePath1, result.getTracked().get(2));
-        assertEquals(filePath2, result.getTracked().get(3));
+        assertTrue(result.getTracked().contains(filePath1));
+        assertTrue(result.getTracked().contains(filePath2));
+        assertTrue(result.getTracked().contains(filePath4));
+        assertTrue(result.getTracked().contains(filePath5));
 
         validateZip(zipPath, Arrays.asList("d/", "d/e/", "d/e/file5.txt",  "d/file4.txt", "file1.txt", "file2.txt"));
     }
