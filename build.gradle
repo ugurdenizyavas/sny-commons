@@ -46,6 +46,9 @@ apply plugin: 'maven-publish'
 // CONFIGURATIONS
 //======================================================================
 
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
 idea {
     project {
         jdkName "1.7"
