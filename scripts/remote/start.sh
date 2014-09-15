@@ -2,8 +2,7 @@
 
 ####
 #
-# Example usage:
-# ./start.sh -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-Shadow.jar -e dev -l /opt/logs/repository -n octopus-repository-service
+# Example usage: ./start.sh -p 9091 -j octopus3-repository-service-1.0-SNAPSHOT-fat.jar
 #
 ####
 
@@ -27,6 +26,7 @@ jar=
 logDirectory=
 environment=
 name=
+JVM_ARGS="-server -Djava.net.preferIPv4Stack=true -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+AlwaysPreTouch -XX:ThreadStackSize=4096 -Xmx512m -Xms256m"
 
 realargs="$@"
 while [ $# -gt 0 ]; do
@@ -93,11 +93,11 @@ mkdir -p "/opt/archive/logs/"
 cp -r "$logDirectory" "/opt/archive/logs/${now}-${name}-logs"
 echo "[ARCHIVE] Logs are archived to /opt/archive/logs/ directory"
 
-rm -Rf ${logDirectory}/*
-echo "[CLEANUP] Cleaned log folder $logDirectory"
+rm -Rf $logDirectory/*
+echo "[CLEAN] Cleaned log folder $logDirectory"
 
 mkdir -p "$logDirectory"
-cmd="nohup /opt/java/bin/java $JVM_ARGS -Dratpack.port=$port -DlogDirectory=$logDirectory -Denvironment=$environment -Dname=$name -jar /opt/shared/to_deploy/$jar > $logDirectory/stdout.log 2>&1&"
+cmd="nohup /opt/java/bin/java $JVM_ARGS -Dratpack.port=$port -DlogDirectory=$logDirectory -Denvironment=$environment  -Dlogback.configurationFile=/opt/shared/configuration/logs/${name}.groovy -Dname=$name -jar /opt/shared/to_deploy/$jar > $logDirectory/stdout.log 2>&1&"
 echo "[START  ] Service is starting with command [ $cmd ]"
 bash -c "$cmd"
 sleep 10
@@ -116,3 +116,4 @@ else
 fi
 
 echo "==============================="
+
