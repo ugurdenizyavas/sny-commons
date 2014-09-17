@@ -1,3 +1,5 @@
 #!/bin/bash
+WORKING_DIR="/opt/shared/scripts"
 
-./start.sh -p 9092 -j /opt/shared/to_deploy/octopus3-cadc-source-service-1.0-SNAPSHOT-Shadow.jar -e dev -l /opt/logs/cadc-source -n octopus3-cadc-source-service
+sh ${WORKING_DIR}/start.sh -p 9092 -j octopus3-cadc-source-service-app.jar -e dev -l /opt/logs/cadc-source -n octopus3-cadc-source-service
+
