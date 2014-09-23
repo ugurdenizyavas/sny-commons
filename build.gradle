@@ -2,7 +2,6 @@
 // PROJECT
 //======================================================================
 
-version = '1.2-SNAPSHOT'
 group = 'com.sony.ebs.octopus3'
 
 //======================================================================
@@ -15,11 +14,13 @@ buildscript {
         maven { url "https://mvn.sony-europe.com/content/groups/global" }
         maven { url "http://repo.spring.io/libs-release-remote" }
         maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url "https://oss.sonatype.org/content/groups/public" }
         mavenCentral()
     }
     dependencies {
         classpath "org.springframework.build.gradle:propdeps-plugin:0.0.7"
         classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7"
+        classpath 'com.github.townsfolk:gradle-release:1.2'
     }
 }
 
@@ -41,6 +42,7 @@ apply plugin: 'propdeps'
 apply plugin: 'propdeps-maven'
 apply plugin: 'propdeps-idea'
 apply plugin: 'maven-publish'
+apply plugin: 'release'
 
 //======================================================================
 // CONFIGURATIONS
