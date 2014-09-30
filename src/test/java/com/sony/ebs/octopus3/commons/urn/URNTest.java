@@ -188,4 +188,15 @@ public class URNTest {
         new URNImpl(Paths.get("/"), null);
     }
 
+    @Test
+    public void getParent() throws URNCreationException {
+        assertEquals(new URNImpl("urn:sku:a:b").getParent(), new URNImpl("urn:sku:a"));
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void getParent_parentNotUrn() throws URNCreationException {
+        URN validUrn = new URNImpl("urn:sku:a");
+
+        validUrn.getParent();
+    }
 }
