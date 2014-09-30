@@ -16,12 +16,14 @@ import java.nio.file.attribute.BasicFileAttributes;
  */
 public class CopyFileVisitor extends SimpleFileVisitor<Path> {
     private final Path targetPath;
+    private final boolean isTargetingFolder;
     private Path sourcePath = null;
 
     private static final Logger logger = LoggerFactory.getLogger(CopyFileVisitor.class);
 
-    public CopyFileVisitor(Path targetPath) {
+    public CopyFileVisitor(Path targetPath, boolean isTargetingFile) {
         this.targetPath = targetPath;
+        this.isTargetingFolder = isTargetingFile;
     }
 
     @Override
@@ -43,7 +45,12 @@ public class CopyFileVisitor extends SimpleFileVisitor<Path> {
                 sourcePath = file.getParent();
             }
 
-            Path targetFile = targetPath.resolve(sourcePath.relativize(file));
+            //If destination is a folder, add filename to targetFile
+            Path targetFile = targetPath;
+            if (isTargetingFolder) {
+                targetFile = targetPath.resolve(sourcePath.relativize(file));
+            }
+
             Path targetParent = targetFile.getParent();
             if (Files.notExists(targetParent)) {
                 logger.debug("Destination path " + targetFile + " does not exist, so creating parent folder");

@@ -33,6 +33,7 @@ public class FileUtilsTest {
     Path filePath7 = Paths.get(basePath + "/d/file7.txt");
     Path filePath8 = Paths.get(basePath + "/d/f/file8.txt");
     Path filePath9 = Paths.get(basePath + "/g/h");
+    Path filePath10 = Paths.get(basePath + "/g/h/file3.txt");
     Path zipPath = Paths.get(basePath.getParent() + "/a.zip");
 
     @Before
@@ -249,7 +250,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void copyFolder() throws IOException {
+    public void copyFolderToFolder() throws IOException {
         FileUtils.writeFile(filePath7, "test".getBytes(), true, true);
         FileUtils.writeFile(filePath8, "test".getBytes(), true, true);
 
@@ -260,12 +261,29 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void copyFile() throws IOException {
+    public void copyFolderToFile() throws IOException {
+        FileUtils.writeFile(filePath7, "test1".getBytes(), true, true);
+
+        FileUtils.copy(filePath6, filePath10, false);
+    }
+
+    @Test
+    public void copyFileToFolder() throws IOException {
         FileUtils.writeFile(filePath7, "test".getBytes(), true, true);
 
         FileUtils.copy(filePath7, filePath9);
 
         assertTrue(Paths.get(filePath9 + "/file7.txt").toFile().exists());
+    }
+
+    @Test
+    public void copyFileToFile() throws IOException {
+        FileUtils.writeFile(filePath3, "test".getBytes(), true, true);
+
+        FileUtils.copy(filePath3, filePath10, false);
+
+        assertTrue(filePath10.toFile().exists());
+        assertFalse(Paths.get(filePath10 + "/file3.txt").toFile().exists());
     }
 
     private static void resetFilePermissions() {
