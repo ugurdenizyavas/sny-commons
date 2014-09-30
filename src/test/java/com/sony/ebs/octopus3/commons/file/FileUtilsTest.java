@@ -261,29 +261,12 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void copyFolderToFile() throws IOException {
-        FileUtils.writeFile(filePath7, "test1".getBytes(), true, true);
-
-        FileUtils.copy(filePath6, filePath10);
-    }
-
-    @Test
     public void copyFileToFolder() throws IOException {
         FileUtils.writeFile(filePath7, "test".getBytes(), true, true);
 
         FileUtils.copy(filePath7, filePath9);
 
         assertTrue(Paths.get(filePath9 + "/file7.txt").toFile().exists());
-    }
-
-    @Test
-    public void copyFileToFile() throws IOException {
-        FileUtils.writeFile(filePath3, "test".getBytes(), true, true);
-
-        FileUtils.copy(filePath3, filePath10);
-
-        assertTrue(filePath10.toFile().exists());
-        assertFalse(Paths.get(filePath10 + "/file3.txt").toFile().exists());
     }
 
     private static void resetFilePermissions() {
