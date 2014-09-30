@@ -264,7 +264,7 @@ public class FileUtilsTest {
     public void copyFolderToFile() throws IOException {
         FileUtils.writeFile(filePath7, "test1".getBytes(), true, true);
 
-        FileUtils.copy(filePath6, filePath10, false);
+        FileUtils.copy(filePath6, filePath10);
     }
 
     @Test
@@ -280,7 +280,7 @@ public class FileUtilsTest {
     public void copyFileToFile() throws IOException {
         FileUtils.writeFile(filePath3, "test".getBytes(), true, true);
 
-        FileUtils.copy(filePath3, filePath10, false);
+        FileUtils.copy(filePath3, filePath10);
 
         assertTrue(filePath10.toFile().exists());
         assertFalse(Paths.get(filePath10 + "/file3.txt").toFile().exists());

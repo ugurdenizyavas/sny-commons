@@ -96,11 +96,8 @@ public class FileUtils {
         return result;
     }
 
-    public static void copy(Path sourcePath, Path targetPath, boolean isTargettingFolder) throws IOException {
-        Files.walkFileTree(sourcePath, new CopyFileVisitor(targetPath, isTargettingFolder));
+    public static void copy(Path sourcePath, Path targetPath) throws IOException {
+        Files.walkFileTree(sourcePath, new CopyFileVisitor(targetPath));
     }
 
-    public static void copy(Path sourcePath, Path targetPath) throws IOException {
-        copy(sourcePath, targetPath, true);
-    }
 }
