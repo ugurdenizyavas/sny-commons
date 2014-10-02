@@ -33,4 +33,18 @@ public class ProcessIdTest {
         ProcessId processId = new ProcessIdImpl(null);
         assertTrue(processId.toString().matches("ProcessIdImpl\\(id=.*\\)"));
     }
+
+    @Test
+    public void testEqualsEqual() {
+        assertEquals(new ProcessIdImpl("123"), new ProcessIdImpl("123"));
+    }
+
+    @Test
+    public void testEqualsNotEqual() {
+        assertNotEquals(new ProcessIdImpl("123"), new ProcessIdImpl("12"));
+    }
+    @Test
+    public void testEqualsNull() {
+        assertNotEquals(new ProcessIdImpl("123"), null);
+    }
 }
