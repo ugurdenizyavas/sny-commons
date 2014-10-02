@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /**
@@ -49,7 +46,7 @@ public class CopyFileVisitor extends SimpleFileVisitor<Path> {
                 logger.debug("Destination path " + targetFile + " does not exist, so creating parent folder");
                 Files.createDirectories(targetParent);
             }
-            Files.copy(file, targetFile);
+            Files.copy(file, targetFile, StandardCopyOption.REPLACE_EXISTING);
             logger.info("File [" + file + "] is copied to target [" + targetFile + "]");
         } catch (IOException e) {
             logger.debug("Unable to copy file [" + file + "] due to errors", e);

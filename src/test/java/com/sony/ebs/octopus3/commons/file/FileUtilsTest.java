@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.commons.file;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,7 +35,7 @@ public class FileUtilsTest {
     Path filePath7 = Paths.get(basePath + "/d/file7.txt");
     Path filePath8 = Paths.get(basePath + "/d/f/file8.txt");
     Path filePath9 = Paths.get(basePath + "/g/h");
-    Path filePath10 = Paths.get(basePath + "/g/h/file3.txt");
+    Path filePath10 = Paths.get(basePath + "/g/h/file7.txt");
     Path zipPath = Paths.get(basePath.getParent() + "/a.zip");
 
     @Before
@@ -267,6 +269,19 @@ public class FileUtilsTest {
         FileUtils.copy(filePath7, filePath9);
 
         assertTrue(Paths.get(filePath9 + "/file7.txt").toFile().exists());
+    }
+
+    @Test
+    public void copyFileToFolder_overrideExistingFile() throws IOException {
+        FileUtils.writeFile(filePath7, "test".getBytes(), true, true);
+        FileUtils.writeFile(filePath10, "test1".getBytes(), true, true);
+
+        assertEquals(StringUtils.join(Files.readAllLines(filePath10, Charset.forName("UTF-8")), ""), "test1");
+        //Override filePath10
+        FileUtils.copy(filePath7, filePath9);
+
+        assertTrue(filePath10.toFile().exists());
+        assertEquals(StringUtils.join(Files.readAllLines(filePath10, Charset.forName("UTF-8")), ""), "test");
     }
 
     private static void resetFilePermissions() {
