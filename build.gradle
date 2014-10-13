@@ -14,12 +14,14 @@ buildscript {
         maven { url "https://mvn.sony-europe.com/content/groups/global" }
         maven { url "http://repo.spring.io/libs-release-remote" }
         maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url 'http://oss.jfrog.org/repo' }
         maven { url "https://oss.sonatype.org/content/groups/public" }
+        jcenter()
         mavenCentral()
     }
     dependencies {
         classpath "org.springframework.build.gradle:propdeps-plugin:0.0.7"
-        classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7"
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
         classpath 'com.github.townsfolk:gradle-release:1.2'
     }
 }
@@ -93,8 +95,8 @@ dependencies {
 nexus {
     attachSources = true
     attachTests = false
-    attachJavadoc = true
+    attachJavadoc = false
     sign = false
-    repositoryUrl = "https://mvn.sony-europe.com/content/repositories/releases"
-    snapshotRepositoryUrl = "https://mvn.sony-europe.com/content/repositories/snapshots"
+    repositoryUrl = 'https://mvn.sony-europe.com/content/repositories/releases'
+    snapshotRepositoryUrl = 'https://mvn.sony-europe.com/content/repositories/snapshots'
 }
