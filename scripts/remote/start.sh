@@ -89,10 +89,6 @@ if [ -n "$pid" ]; then
     exit 1
 fi
 
-mkdir -p "/opt/archive/logs/"
-cp -r "$logDirectory" "/opt/archive/logs/${now}-${name}-logs"
-echo "[ARCHIVE] Logs are archived to /opt/archive/logs/ directory"
-
 rm -Rf $logDirectory/*
 echo "[CLEAN] Cleaned log folder $logDirectory"
 
