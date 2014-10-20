@@ -6,7 +6,7 @@ package com.sony.ebs.octopus3.commons.process;
  */
 public class Process {
     ProcessId processId;
-    FlowTypeEnum domain;
+    FlowTypeEnum flow;
     ServiceTypeEnum service;
     String publication;
     String locale;
