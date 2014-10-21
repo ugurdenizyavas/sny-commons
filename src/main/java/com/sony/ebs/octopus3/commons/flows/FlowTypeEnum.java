@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.commons.process;
+package com.sony.ebs.octopus3.commons.flows;
 
 /**
  * author: TRYavasU
