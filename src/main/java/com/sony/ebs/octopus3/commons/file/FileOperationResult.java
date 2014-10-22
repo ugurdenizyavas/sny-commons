@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class FileOperationResult {
 
+    private String message;
+
     private List<Path> filesTracked = new ArrayList<Path>();
     private List<Path> filesFailed = new ArrayList<Path>();
 
@@ -28,5 +30,13 @@ public class FileOperationResult {
 
     public List<Path> getFailed() {
         return filesFailed;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -47,11 +47,11 @@ public class FileUtilsTest {
     public void doAfter() {
         resetFilePermissions();
         if (basePath.toFile().exists()) {
-            FileUtils.delete(basePath);
+            FileUtils.delete(basePath, false);
         }
         //Delete zip file in zip tests
         if (zipPath.toFile().exists()) {
-            FileUtils.delete(zipPath);
+            FileUtils.delete(zipPath, false);
         }
     }
 
@@ -83,7 +83,7 @@ public class FileUtilsTest {
     public void deleteDirectory() throws Exception {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
         FileUtils.writeFile(filePath2, "test".getBytes(), true, true);
-        FileOperationResult result = FileUtils.delete(basePath);
+        FileOperationResult result = FileUtils.delete(basePath, false);
 
         assertFalse(basePath.toFile().exists());
         assertTrue(result.getTracked().contains(filePath1));
@@ -95,7 +95,7 @@ public class FileUtilsTest {
     public void deleteFile() throws Exception {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
 
-        FileOperationResult result = FileUtils.delete(filePath1);
+        FileOperationResult result = FileUtils.delete(filePath1, false);
         assertEquals(filePath1, result.getTracked().get(0));
 
         assertTrue(basePath.toFile().exists());
@@ -104,16 +104,31 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void deleteDirectory_unableToDelete_missingFolder() throws Exception {
+    public void deleteDirectory_unableToDelete_missingFolder_throwException() throws Exception {
         FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
 
-        FileOperationResult result = FileUtils.delete(basePath);
+        FileOperationResult result = FileUtils.delete(basePath, true);
         assertTrue(result.getTracked().contains(filePath1));
         assertFalse(basePath.toFile().exists());
         assertTrue(result.getFailed().isEmpty());
 
         // delete already deleted folder
-        result = FileUtils.delete(basePath);
+        result = FileUtils.delete(basePath, true);
+        assertTrue(result.getTracked().isEmpty());
+        assertTrue(result.getTracked().isEmpty());
+    }
+
+    @Test
+    public void deleteDirectory_unableToDelete_missingFolder_noException() throws Exception {
+        FileUtils.writeFile(filePath1, "test".getBytes(), true, true);
+
+        FileOperationResult result = FileUtils.delete(basePath, true);
+        assertTrue(result.getTracked().contains(filePath1));
+        assertFalse(basePath.toFile().exists());
+        assertTrue(result.getFailed().isEmpty());
+
+        // delete already deleted folder
+        result = FileUtils.delete(basePath, false);
         assertTrue(result.getTracked().isEmpty());
         assertTrue(result.getTracked().isEmpty());
     }
@@ -136,7 +151,7 @@ public class FileUtilsTest {
             public void checkPermission(Permission perm) {
             }
         });
-        FileOperationResult result = FileUtils.delete(basePath);
+        FileOperationResult result = FileUtils.delete(basePath, true);
 
         assertTrue(basePath.toFile().exists());
         assertFalse(filePath1.toFile().exists());
@@ -168,7 +183,7 @@ public class FileUtilsTest {
             public void checkPermission(Permission perm) {
             }
         });
-        FileOperationResult result = FileUtils.delete(basePath);
+        FileOperationResult result = FileUtils.delete(basePath, true);
 
         assertTrue(basePath.toFile().exists());
         assertFalse(filePath1.toFile().exists());

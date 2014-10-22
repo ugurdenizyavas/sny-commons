@@ -26,7 +26,7 @@ public class FileUtils {
      * @param dir as the path of file or folder to delete
      * @return List of deleted paths
      */
-    public static FileOperationResult delete(Path dir) {
+    public static FileOperationResult delete(Path dir, boolean failIfNoFile) {
         final FileOperationResult result = new FileOperationResult();
 
         SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
@@ -58,13 +58,21 @@ public class FileUtils {
             }
         };
 
-        try {
-            Files.walkFileTree(dir, visitor);
-            logger.debug("File/folder in path [" + dir + "] is deleted");
-        } catch (Exception e) {
-            logger.debug("Unable to walk in directory [" + dir + "] due to errors", e);
+        if (!Files.exists(dir) && !failIfNoFile) {
+            logger.debug("File/folder in path [" + dir + "] is not found; avoiding exception since failIFNoFile is false");
+            result.setMessage("File/folder in path [" + dir + "] is not found");
+            return result;
+        } else {
+            try {
+                Files.walkFileTree(dir, visitor);
+                logger.debug("File/folder in path [" + dir + "] is deleted");
+                result.setMessage("File/folder in path [" + dir + "] is deleted");
+            } catch (Exception e) {
+                logger.debug("Unable to walk in directory [" + dir + "] due to errors", e);
+                result.setMessage("Unable to walk in directory [" + dir + "] due to errors");
+            }
+            return result;
         }
-        return result;
     }
 
     public static boolean writeFile(Path path, byte[] content, boolean override, boolean createMissingFolders) {
