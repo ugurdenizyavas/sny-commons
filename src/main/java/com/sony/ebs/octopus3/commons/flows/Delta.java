@@ -2,6 +2,9 @@ package com.sony.ebs.octopus3.commons.flows;
 
 import com.sony.ebs.octopus3.commons.process.ProcessId;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * author: TRYavasU
  * date: 20/10/2014
@@ -61,6 +64,15 @@ public class Delta {
 
     public void setStatus(Object status) {
         this.status = status;
+    }
+
+    public Map<String, String> getTicket() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("flow", flow.toString());
+        map.put("service", service.toString());
+        map.put("publication", publication);
+        map.put("locale", locale);
+        return map;
     }
 
     @Override
