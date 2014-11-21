@@ -14,9 +14,13 @@ public class Delta {
     ProcessId processId;
     FlowTypeEnum flow;
     ServiceTypeEnum service;
+    RepoValue type;
     String publication;
     String locale;
     Object status;
+    boolean upload;
+    String sdate;
+    String edate;
 
     public ProcessId getProcessId() {
         return processId;
@@ -66,6 +70,38 @@ public class Delta {
         this.status = status;
     }
 
+    public boolean isUpload() {
+        return upload;
+    }
+
+    public void setUpload(boolean upload) {
+        this.upload = upload;
+    }
+
+    public String getSdate() {
+        return sdate;
+    }
+
+    public void setSdate(String sdate) {
+        this.sdate = sdate;
+    }
+
+    public String getEdate() {
+        return edate;
+    }
+
+    public void setEdate(String edate) {
+        this.edate = edate;
+    }
+
+    public RepoValue getType() {
+        return type;
+    }
+
+    public void setType(RepoValue type) {
+        this.type = type;
+    }
+
     public Map<String, String> getTicket() {
         Map<String, String> map = new HashMap<String, String>();
         map.put("flow", flow.toString());
@@ -98,8 +134,13 @@ public class Delta {
                 "processId=" + processId +
                 ", flow=" + flow +
                 ", service=" + service +
+                ", type=" + type +
+                ", sdate=" + sdate +
+                ", edate=" + edate +
+                ", upload=" + upload +
                 ", publication='" + publication + '\'' +
                 ", locale='" + locale + '\'' +
                 '}';
     }
+
 }
