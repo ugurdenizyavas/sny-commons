@@ -131,6 +131,15 @@ public class URNImpl implements URN {
     }
 
     @Override
+    public URN getParent() throws URNCreationException {
+        List<String> parentValues = new ArrayList<String>(values.size() - 1);
+        for (int i = 0; i < values.size() - 1; i++) {
+            parentValues.add(values.get(i));
+        }
+        return new URNImpl(type, parentValues);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

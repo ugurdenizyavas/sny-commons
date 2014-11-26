@@ -20,7 +20,7 @@ public class URNTest {
         assertEquals("Type is wrong", "vm", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("123456789"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:vm:123456789", urn.toString());
-        assertEquals("Generated path string is wrong", "/vm/123456789", urn.toPath());
+        assertEquals("Generated path string is wrong", Paths.get("/vm/123456789").toString(), urn.toPath());
     }
 
     @Test
@@ -29,7 +29,7 @@ public class URNTest {
         assertEquals("Type is wrong", "vm", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("123456789", "en_gb"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
-        assertEquals("Generated path string is wrong", "/vm/123456789/en_gb", urn.toPath());
+        assertEquals("Generated path string is wrong", Paths.get("/vm/123456789/en_gb").toString(), urn.toPath());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class URNTest {
         assertEquals("Type is wrong", "vm", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("123456789", "en_gb"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
-        assertEquals("Generated path string is wrong", "/vm/123456789/en_gb", urn.toPath());
+        assertEquals("Generated path string is wrong", Paths.get("/vm/123456789/en_gb").toString(), urn.toPath());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class URNTest {
         assertEquals("Type is wrong", "vm", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("123456789", "en_gb"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:vm:123456789:en_gb", urn.toString());
-        assertEquals("Generated path string is wrong", "/vm/123456789/en_gb", urn.toPath());
+        assertEquals("Generated path string is wrong", Paths.get("/vm/123456789/en_gb").toString(), urn.toPath());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class URNTest {
         assertEquals("Type is wrong", "amazon_feed", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("global", "en_gb", "kafa-1500", "product_info.csv"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:amazon_feed:global:en_gb:kafa-1500:product_info.csv", urn.toString());
-        assertEquals("Generated path string is wrong", "/amazon_feed/global/en_gb/kafa-1500/product_info.csv", urn.toPath());
+        assertEquals("Generated path string is wrong", Paths.get("/amazon_feed/global/en_gb/kafa-1500/product_info.csv").toString(), urn.toPath());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class URNTest {
         assertEquals("Type is wrong", "c", urn.getType());
         assertEquals("Value is wrong", Arrays.asList("d", "e"), urn.getValues());
         assertEquals("Generated URN string is wrong", "urn:c:d:e", urn.toString());
-        assertEquals("Generated path string is wrong", "/c/d/e", urn.toPath());
+        assertEquals("Generated path string is wrong", Paths.get("/c/d/e").toString(), urn.toPath());
 
         assertEquals("Equals logic of URN is wrong", new URNImpl("urn:c:d:e"), urn);
         assertEquals("Hash code of URN string is wrong", new URNImpl("urn:c:d:e").hashCode(), urn.hashCode());
@@ -188,4 +188,15 @@ public class URNTest {
         new URNImpl(Paths.get("/"), null);
     }
 
+    @Test
+    public void getParent() throws URNCreationException {
+        assertEquals(new URNImpl("urn:sku:a:b").getParent(), new URNImpl("urn:sku:a"));
+    }
+
+    @Test(expected = URNCreationException.class)
+    public void getParent_parentNotUrn() throws URNCreationException {
+        URN validUrn = new URNImpl("urn:sku:a");
+
+        validUrn.getParent();
+    }
 }

@@ -43,12 +43,15 @@ apply plugin: "groovy"
 apply plugin: 'propdeps'
 apply plugin: 'propdeps-maven'
 apply plugin: 'propdeps-idea'
+apply plugin: 'maven-publish'
 apply plugin: 'release'
-
 
 //======================================================================
 // CONFIGURATIONS
 //======================================================================
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
 
 idea {
     project {
@@ -72,6 +75,7 @@ configurations.optional.transitive = false
 //======================================================================
 
 dependencies {
+    compile group: "com.hazelcast", name: "hazelcast-all", version: "3.3"
     compile group: "org.slf4j", name: "slf4j-api", version: "1.7.5"
     provided group: "org.slf4j", name: "jcl-over-slf4j", version: "1.7.5"
     provided group: "org.slf4j", name: "log4j-over-slf4j", version: "1.7.5"
