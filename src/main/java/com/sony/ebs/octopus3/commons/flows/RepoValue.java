@@ -12,6 +12,7 @@ public enum RepoValue {
     thirdparty,
     archive,
     flix_sku,
-    amazon_feed
+    amazon_feed,
+    score_sku
 
 }
